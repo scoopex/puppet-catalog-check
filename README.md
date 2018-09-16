@@ -4,11 +4,14 @@ PUPPET CATALOG TESTS
 Kurzbeschreibung
 ================
 
-Puppet berechnet auf der Basis der Servereingenschaften (Facts), dem internen und externen Puppetcode und der Konfigurationen die in den Hieradateien hinterlegt sind eine Struktur die sich "Catalog" nennt.
-Dabei entsteht ein recht komplexes Netz von Abhängigkeiten bzw. eine Vielzahl von möglichen Varianten.
-Das führt bei größeren Setups (wie dem unseren) dazu das bei Modul-Upgrades, Restrukturierungen bzw. auch der Aufbau von neuen Systemen immer höherer Aufwand entsteht bzw. das Setup ziemlich konservativ verwaltet werden muss. 
+Puppet berechnet auf der Basis der Servereingenschaften (Facts), den Modulen (eigene und externe) und den Konfigurationen die in den Hieradateien hinterlegt sind eine Struktur die sich "Catalog" nennt.
+
+Dabei entsteht ein recht komplexes Netz von Abhängigkeiten bzw. eine Vielzahl von unterschiedlichen möglichen Varianten von Systemen
+
+Das führt bei größeren Setups dazu das bei Modul-Upgrades, Restrukturierungen bzw. auch der Aufbau von neuen Systemen immer höherer Aufwand entsteht bzw. das Setup ziemlich konservativ verwaltet werden muss. 
 
 Das Catalog-Test-Tool ermöglicht die Auswirkungen von Änderungen testweise zu berechnen und Analysen auf den erzeugten Catalogs zu analysieren.
+
 Auf diese Weise kann die Puppet Umgebung analysiert und die Vorgehensweise optimiert werden.
 
 Hintergrund
