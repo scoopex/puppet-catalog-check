@@ -1,7 +1,7 @@
-__all__ = [ 'CatalogRun',
-            'CommandlineOutputReporting',
-            'Helper',
-            'ManageGitCheckout',
-            'ManageGitCheckouts',
-            'QueryPuppetdb',
-            'Reporting']
+__all__ = ['CatalogRun',
+           'CommandlineOutputReporting',
+           'Helper',
+           'ManageGitCheckout',
+           'ManageGitCheckouts',
+           'QueryPuppetdb',
+           'Reporting']

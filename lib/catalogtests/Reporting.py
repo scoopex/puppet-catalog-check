@@ -138,7 +138,6 @@ class Reporting(object):
 
         return (num_envs, failed_hosts)
 
-
     def write_junit_file(self, env, f_template, junit_dir, result, timestamp_testexecution):
         if junit_dir is not None:
             junit_filename = re.sub("/+", "/", ("%s/%s.xml" % (junit_dir, env)))
@@ -153,8 +152,8 @@ class Reporting(object):
                         'time': result['total_time'],
                         'timestamp_testexecution': timestamp_testexecution,
                         'output': result['output']
-                        }
-                    )
+                    }
+                                   )
                 except Exception as e:
                     # An exception happened in this thread
                     print

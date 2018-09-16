@@ -23,7 +23,6 @@ requests.packages.urllib3.disable_warnings()
 RUNDIR = os.path.realpath(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(RUNDIR + "/../lib/")
 
-
 from catalogtests import CatalogRun
 from catalogtests import ManageGitCheckouts
 from catalogtests import Reporting
@@ -32,6 +31,7 @@ from catalogtests import QueryPuppetdb
 from catalogtests import CommandlineOutputReporting
 from catalogtests.threads import ThreadPool
 from catalogtests import Helper
+
 
 ########################################################################################################################
 ###

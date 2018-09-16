@@ -6,6 +6,7 @@ from catalogtests import ManageGitCheckout
 
 from pprint import pprint
 
+
 class ManageGitCheckouts(object):
 
     def __init__(self, envs, threads, basedir, targetdir, debug=False):
@@ -66,7 +67,8 @@ class ManageGitCheckouts(object):
 
         # Prepare shared production folder
         if manage_shared_env is not None:
-            env_mappings = self.queue_shared_environment(branch, env_mappings, manage_shared_env, purge_existing_environments)
+            env_mappings = self.queue_shared_environment(branch, env_mappings, manage_shared_env,
+                                                         purge_existing_environments)
 
         prepare_env_objects = env_mappings.values()
 
@@ -99,5 +101,3 @@ class ManageGitCheckouts(object):
                                                 purge_existing_environments)
 
         return env_mappings
-
-

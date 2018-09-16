@@ -2,9 +2,7 @@ import os
 import argparse
 
 
-
 class Helper(object):
-
     debug = False
     permission_reference_dir = __file__
     configfile = None
@@ -38,13 +36,13 @@ class Helper(object):
         return (stat_info.st_uid, stat_info.st_gid)
 
     @staticmethod
-    def process_arguments(argv, default_config, disable_exit_on_error = False):
+    def process_arguments(argv, default_config, disable_exit_on_error=False):
 
         exitcode = None
         additional_info = []
 
         def bypass_error(message):
-            print("ERROR OUTPUT RAISED: >>>" + message +  "<<<")
+            print("ERROR OUTPUT RAISED: >>>" + message + "<<<")
             additional_info.append(message)
 
         parser = argparse.ArgumentParser(

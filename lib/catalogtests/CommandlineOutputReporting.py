@@ -8,7 +8,6 @@ from catalogtests import Helper
 
 
 class CommandlineOutputReporting(object):
-
     MESSAGETYPES_ORDERED = ['Error', 'Warning', 'Notice']
     TABLE_HEAD = """
 <html>
@@ -55,9 +54,9 @@ class CommandlineOutputReporting(object):
         src_dir = os.path.realpath(os.path.dirname(os.path.realpath(__file__))) + "/../../share/html-reports/"
         dst_dir = os.path.realpath(os.path.dirname(os.path.realpath(html_filename)))
 
-        for filename in [ "jquery-latest.js", "jquery.tablesorter.js", "style.css" ]:
-            filename_abs = dst_dir+"/"+filename
-            shutil.copy(src_dir+"/"+filename,filename_abs)
+        for filename in ["jquery-latest.js", "jquery.tablesorter.js", "style.css"]:
+            filename_abs = dst_dir + "/" + filename
+            shutil.copy(src_dir + "/" + filename, filename_abs)
             Helper.Helper.set_file_permissions(filename_abs)
 
     def gather_results(self, output="-"):
@@ -70,7 +69,7 @@ class CommandlineOutputReporting(object):
         elif output is None:
             pass
         else:
-            raise("No suitable commandline output defined")
+            raise ("No suitable commandline output defined")
         return ret
 
     def gather_results_stdout(self):

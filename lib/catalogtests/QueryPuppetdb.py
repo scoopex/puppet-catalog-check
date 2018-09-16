@@ -1,7 +1,7 @@
-
 from pypuppetdb import connect
 from pprint import pprint
 import re
+
 
 class QueryPuppetdb(object):
 
@@ -23,10 +23,10 @@ class QueryPuppetdb(object):
             node = self.puppetdb.node(nodename)
             node_list.append(
                 {
-                 "nodename": node.name,
-                 "environment": node.facts_environment,
-                 "environment_src": puppet_src_environment,
-                 })
+                    "nodename": node.name,
+                    "environment": node.facts_environment,
+                    "environment_src": puppet_src_environment,
+                })
         return node_list
 
     def get_hosts_by_environment(self, puppet_src_environment, nodes_of):
@@ -37,7 +37,7 @@ class QueryPuppetdb(object):
                 {"nodename": node.name,
                  "environment": node.facts_environment,
                  "environment_src": puppet_src_environment,
-                })
+                 })
         return node_list
 
     def get_environments_with_nodes(self, regex_filter=".*"):

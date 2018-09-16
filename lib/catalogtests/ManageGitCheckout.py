@@ -8,6 +8,7 @@ from catalogtests import Helper
 
 from pprint import pprint
 
+
 class ManageGitCheckout(object):
 
     def __init__(self, src, dst, branch, debug, purge_existing_environments):
@@ -36,7 +37,7 @@ class ManageGitCheckout(object):
             out = "EXEC: %s" % cmd
             if workingdir is not None:
                 out += " with workingdir %s" % workingdir
-            sys.stderr.write(out+"\n")
+            sys.stderr.write(out + "\n")
 
         if workingdir is None:
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)

@@ -10,6 +10,7 @@ from pprint import pprint
 
 RE_OUTPUT_PARSE = re.compile(r"^(?P<preJson>.*?)(?P<json>{.+})(?P<postJson>.*)$", re.DOTALL)
 
+
 class CatalogRun(object):
 
     def __init__(self, environment, host, debug=False):
@@ -17,7 +18,7 @@ class CatalogRun(object):
         self.host = host
         self.debug = debug
         self.output_problems = False
-        self.cmd_formatstring = "puppet master --color false --logdest console --compile %(host)s " +\
+        self.cmd_formatstring = "puppet master --color false --logdest console --compile %(host)s " + \
                                 "--environment %(environment)s --certname %(certname)s"
         self.result = {"host": host}
         self.cmd = None
