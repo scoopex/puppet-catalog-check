@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+
+########################################################################################################################
+###
+### Marc Schöchlin <ms@256bit.org>
+
+import argparse
+import configparser
+import os
+import sys
+import time
+from pprint import pprint
+import requests.packages.urllib3
+
+sys.dont_write_bytecode = True
+
+########################################################################################################################
+###
+### Configure
+
+requests.packages.urllib3.disable_warnings()
+
+RUNDIR = os.path.realpath(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(RUNDIR + "/../lib/")
+
+
+from catalogtests import CatalogRun
+from catalogtests import ManageGitCheckouts
+from catalogtests import Reporting
+from catalogtests import Helper
+from catalogtests import QueryPuppetdb
+from catalogtests import CommandlineOutputReporting
+from catalogtests.threads import ThreadPool
+from catalogtests import Helper
+
+########################################################################################################################
+###
+### HELPERS
+
+def thread_func_catalog_compile(node):
+    ex = CatalogRun.CatalogRun(node["environment"], node["nodename"], args.debug)
+    ex.problem_output(args.problem_output)
+    ex.set_json_dump_dir(args.jsondir)
+    ex.set_certname(args.certname)
+    ex.execute_catalog_test()
+    # append to this list should be protected by the global interpreter lock *sigh*
+    results.append(ex)
+
+
+########################################################################################################################
+###
+### MAIN
+
+default_config = Helper.Helper.get_config_file()
+args, additional_info, exitcode, parser = Helper.Helper.process_arguments(sys.argv[1:], default_config)
+
+if exitcode is not None and exitcode > 0:
+    sys.exit(exitcode)
+
+########################################################################################################################
+### Processing
+
+try:
+    config = configparser.RawConfigParser()
+    config.read(args.config.name)
+
+    config_puppetdb = config._sections['puppetdb']
+except:
+    raise Exception("Error reading the configuration file %s" % args.config.name)
+
+qpdb = QueryPuppetdb.QueryPuppetdb(config_puppetdb, args.debug)
+
+results = []
+
+if args.debug:
+    print("INFO: debug output enabled")
+
+if (args.environment is not None) and (args.nodesof is not None):
+    node_list_all = qpdb.get_hosts_by_environment(args.environment, args.nodesof)
+elif (args.environment is not None) and (args.host is not None):
+    node_list_all = qpdb.get_hosts_by_hostnames(args.environment, args.host)
+elif args.all is not None:
+    environments_node_lists = qpdb.get_environments_with_nodes(args.all)
+    node_list_all = []
+    for env_name, node_list in environments_node_lists.items():
+        print("INFO: add environment '%s' to queue" % env_name)
+        node_list_all += node_list
+else:
+    parser.print_usage()
+    sys.exit(1)
+
+if args.prepare_git_repo_path is not None and not os.path.isdir(args.prepare_git_repo_path):
+    sys.stderr.write("ERROR: '%s' is not a directory" % args.prepare_git_repo_path)
+    sys.exit(1)
+
+if args.debug:
+    sys.stderr.write("DEBUG: have to process %i nodes\n" % len(node_list_all))
+
+start = time.time()
+
+if args.threads == 1 and args.debug:
+    print("INFO: execution without threading")
+
+if args.prepare_git_repo_path:
+    git_mgmt = ManageGitCheckouts.ManageGitCheckouts(node_list_all, args.threads, args.prepare_git_repo_path_src,
+                                                     args.prepare_git_repo_path, args.debug)
+    if git_mgmt.check_collisions() is False:
+        sys.stderr.write("ERROR: there are collisions")
+        sys.exit(1)
+
+    r_prepare_envs = git_mgmt.prepare_envs(branch=args.override_branches,
+                                           manage_shared_env=args.manage_shared_env,
+                                           purge_existing_environments=args.purge_existing_envs)
+    if not r_prepare_envs:
+        sys.exit(1)
+
+if args.threads == 1:
+    for node in node_list_all:
+        thread_func_catalog_compile(node)
+else:
+    pool = ThreadPool.ThreadPool(args.threads)
+    pool.map(thread_func_catalog_compile, node_list_all)
+    pool.wait_completion()
+
+if len(node_list_all) != len(results):
+    sys.stderr.write("WARNING: amount of results does not fit to number of hosts\n")
+
+rep = Reporting.Reporting(results, args.debug)
+(processed_environments, failed_hosts) = rep.gather_results(args.junitdir)
+
+orep = CommandlineOutputReporting.CommandlineOutputReporting(results, args.debug)
+orep.gather_results(args.puppet_output_stats)
+
+end = time.time()
+runtime_minutes = ((end - start) / 60)
+
+if len(node_list_all) == 0:
+    seconds_per_host = 0
+else:
+    seconds_per_host = (end - start) / len(node_list_all)
+
+sys.stderr.write("\n\nINFO: catalog test took %.2f minutes for %i hosts on %i environments (%.2f seconds per host)\n" %
+                 (runtime_minutes, len(node_list_all), processed_environments, seconds_per_host))
+
+if len(node_list_all) == 0:
+    sys.stdout.write("ERROR: execution failed, because there wer no hosts in the list")
+    sys.exit(1)
+elif (failed_hosts / len(node_list_all)) * 100 > args.fail_percentage:
+    sys.stdout.write("ERROR: execution failed, because more that %i%% of the tests failed\n" % int(
+        (failed_hosts / len(node_list_all)) * 100))
+    sys.exit(1)
+else:
+    sys.exit(0)
+
+# vim: ai et ts=2 shiftwidth=2 expandtab
